@@ -21,9 +21,6 @@ public class DuplicataPricingStrategyTest {
         //act
         BigDecimal presentValue = strategy.calculatePresentValue(faceValue, termMonths, baseRate);
 
-        System.out.println("Expected: " + expectedPrice);
-        System.out.println("Actual: " + presentValue);
-
         //Aassert
         assertEquals(expectedPrice, presentValue);
     }
