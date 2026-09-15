@@ -1,11 +1,13 @@
 package br.com.srm.creditengine.domain.strategy;
 
 import br.com.srm.creditengine.domain.model.ReceivableType;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+@Component
 public class DuplicataPricingStrategy implements PricingStrategy{
     private static final BigDecimal SPREAD = new BigDecimal("0.015");
 
