@@ -12,6 +12,11 @@ public class ChequePricingStrategy implements PricingStrategy{
     private static final BigDecimal SPREAD = new BigDecimal("0.025");
 
     @Override
+    public BigDecimal getSpread() {
+        return SPREAD;
+    }
+
+    @Override
     public ReceivableType getReceivableType() {
         return ReceivableType.CHEQUE_PRE_DATADO;
     }

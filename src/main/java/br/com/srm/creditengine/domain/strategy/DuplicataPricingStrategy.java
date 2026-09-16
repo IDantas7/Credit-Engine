@@ -1,6 +1,7 @@
 package br.com.srm.creditengine.domain.strategy;
 
 import br.com.srm.creditengine.domain.model.ReceivableType;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -10,6 +11,11 @@ import java.math.RoundingMode;
 @Component
 public class DuplicataPricingStrategy implements PricingStrategy{
     private static final BigDecimal SPREAD = new BigDecimal("0.015");
+
+    @Override
+    public BigDecimal getSpread(){
+        return SPREAD;
+    }
 
     @Override
     public ReceivableType getReceivableType(){

@@ -4,6 +4,7 @@ import br.com.srm.creditengine.domain.exception.PricingStrategyNotFoundException
 import br.com.srm.creditengine.domain.model.Receivable;
 import br.com.srm.creditengine.domain.model.ReceivableType;
 import br.com.srm.creditengine.domain.strategy.PricingStrategy;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @Service
 public class PricingCalculator {
+    @Getter
     private final BigDecimal baseRate;
 
     private Map<ReceivableType, PricingStrategy> strategies = new HashMap<>();
@@ -39,4 +41,13 @@ public class PricingCalculator {
         );
 
     }
+
+    public BigDecimal getSpread(ReceivableType receivableType) {
+        PricingStrategy strategy = strategies.get(receivableType);
+        if (strategy == null){
+            throw new PricingStrategyNotFoundException("Strategy not found for receivable: " + receivableType);
+        }
+        return strategy.getSpread();
+    }
+
 }

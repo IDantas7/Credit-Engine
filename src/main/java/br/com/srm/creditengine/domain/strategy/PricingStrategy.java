@@ -8,6 +8,8 @@ public interface PricingStrategy {
 
     ReceivableType getReceivableType();
 
+    BigDecimal getSpread();
+
     BigDecimal calculatePresentValue(
             BigDecimal faceValue,
             int termMonths,
