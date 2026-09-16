@@ -1,6 +1,8 @@
 package br.com.srm.creditengine.application.service;
 
 import br.com.srm.creditengine.application.result.SettlementResult;
+import br.com.srm.creditengine.domain.exception.IdempotencyConflictException;
+import br.com.srm.creditengine.domain.exception.SimulationAlreadySettledException;
 import br.com.srm.creditengine.domain.exception.SimulationNotFoundException;
 import br.com.srm.creditengine.infrastructure.persistence.entity.SettlementEntity;
 import br.com.srm.creditengine.infrastructure.persistence.entity.SimulationEntity;
@@ -9,6 +11,8 @@ import br.com.srm.creditengine.infrastructure.persistence.repository.SimulationR
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,6 +30,9 @@ public class SettlementApplicationService {
 
         if (existingSettlement.isPresent()) {
             SettlementEntity settlementEntity = existingSettlement.get();
+            if (!Objects.equals(settlementEntity.getSimulation().getId(), simulationId)) {
+                throw new IdempotencyConflictException(idempotencyKey);
+            }
             return new SettlementResult(
                     settlementEntity.getId(),
                     settlementEntity.getSimulation().getId(),
@@ -40,6 +47,11 @@ public class SettlementApplicationService {
             throw new SimulationNotFoundException(simulationId);
         }
         SimulationEntity simulationEntity = existingSimulation.get();
+
+        Optional<SettlementEntity> existingSettlementBySimulation  = settlementRepository.findBySimulationId(simulationEntity.getId());
+        if (existingSettlementBySimulation.isPresent()){
+            throw new SimulationAlreadySettledException(simulationId);
+        }
 
         SettlementEntity settlement = SettlementEntity.builder()
                 .idempotencyKey(idempotencyKey)

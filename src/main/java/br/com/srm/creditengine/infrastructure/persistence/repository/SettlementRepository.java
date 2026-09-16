@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface SettlementRepository extends JpaRepository<SettlementEntity,Long> {
 
     Optional<SettlementEntity> findByIdempotencyKey(String idempotencyKey);
+    Optional<SettlementEntity> findBySimulationId(Long simulationId);
 }
