@@ -53,7 +53,7 @@ public class SettlementApplicationServiceTest {
         assertEquals("abc-123", result.idempotencyKey());
         assertEquals(1L, result.settlementId());
 
-        verify(settlementRepository, never()).save(any(SettlementEntity.class));
+        verify(settlementRepository, never()).saveAndFlush(any(SettlementEntity.class));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class SettlementApplicationServiceTest {
                 .id(1L)
                 .build();
 
-        when(settlementRepository.save(any(SettlementEntity.class))).thenReturn(saveSettle);
+        when(settlementRepository.saveAndFlush(any(SettlementEntity.class))).thenReturn(saveSettle);
 
         SettlementResult result = settlementApplicationService.settle(10L, "abc-123");
 
@@ -90,7 +90,7 @@ public class SettlementApplicationServiceTest {
         assertEquals(1L, result.settlementId());
 
         verify(settlementRepository)
-                .save(any(SettlementEntity.class));
+                .saveAndFlush(any(SettlementEntity.class));
     }
 
 }

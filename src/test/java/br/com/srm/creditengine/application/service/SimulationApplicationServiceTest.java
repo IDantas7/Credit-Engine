@@ -66,7 +66,7 @@ public class SimulationApplicationServiceTest {
                 .discount(new BigDecimal("7140.06"))
                 .build();
 
-        when(simulationRepository.save(any(SimulationEntity.class))).thenReturn(savedSimulation);
+        when(simulationRepository.saveAndFlush(any(SimulationEntity.class))).thenReturn(savedSimulation);
 
         SimulationResult result = simulationApplicationService.simulate(receivable);
 
@@ -82,7 +82,7 @@ public class SimulationApplicationServiceTest {
         assertNull(result.fxRate());
         assertNull(result.convertedValue());
 
-        verify(simulationRepository).save(any(SimulationEntity.class));
+        verify(simulationRepository).saveAndFlush(any(SimulationEntity.class));
         verifyNoInteractions(currencyConverter, currencyEngine);
 
     }
@@ -133,7 +133,7 @@ public class SimulationApplicationServiceTest {
                 .convertedValue(new BigDecimal("17094.67"))
                 .build();
 
-        when(simulationRepository.save(any(SimulationEntity.class)))
+        when(simulationRepository.saveAndFlush(any(SimulationEntity.class)))
                 .thenReturn(savedSimulation);
 
         SimulationResult result =
@@ -165,7 +165,7 @@ public class SimulationApplicationServiceTest {
         );
 
         verify(simulationRepository)
-                .save(any(SimulationEntity.class));
+                .saveAndFlush(any(SimulationEntity.class));
     }
 
 }
