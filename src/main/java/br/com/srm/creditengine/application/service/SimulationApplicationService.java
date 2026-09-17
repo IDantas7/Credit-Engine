@@ -56,7 +56,7 @@ public class SimulationApplicationService {
                 .convertedValue(convertedValue)
                 .build();
 
-        SimulationEntity savedSimulation = simulationRepository.save(simulation);
+        SimulationEntity savedSimulation = simulationRepository.saveAndFlush(simulation);
         return new SimulationResult(
                 savedSimulation.getId(),
                 savedSimulation.getReceivableType(),

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -59,7 +60,7 @@ public class SettlementApplicationService {
                 .build();
 
         SettlementEntity savedSettlement =
-                settlementRepository.save(settlement);
+                settlementRepository.saveAndFlush(settlement);
         return new SettlementResult(
                 savedSettlement.getId(),
                 savedSettlement.getSimulation().getId(),
@@ -67,5 +68,18 @@ public class SettlementApplicationService {
                 savedSettlement.getSettledAt()
         );
 
+    }
+    @Transactional
+    public List<SettlementResult> findAll(){
+        List<SettlementEntity> settlementEntities = settlementRepository.findAll();
+
+        return settlementEntities.stream()
+                .map(settlement -> new SettlementResult(
+                        settlement.getId(),
+                        settlement.getSimulation().getId(),
+                        settlement.getIdempotencyKey(),
+                        settlement.getSettledAt()
+                ))
+                .toList();
     }
 }
