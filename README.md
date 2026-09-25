@@ -21,7 +21,7 @@ A solução foi desenvolvida com foco em **corretude dos cálculos financeiros, 
 
 Optei por Java e Spring Boot por serem tecnologias maduras para construção de APIs e por fornecerem uma boa estrutura para organização das regras de negócio e integração com banco de dados.
 
-Para os tipagem de valores financeiros foi utilizado `BigDecimal`, permitindo trabalhar com valores decimais e controlar explicitamente o arredondamento.
+Para a tipagem de valores financeiros foi utilizado `BigDecimal`, permitindo trabalhar com valores decimais e controlar explicitamente o arredondamento.
 
 O PostgreSQL foi utilizado para persistir as simulações e liquidações em um banco de dados relacional.
 
@@ -331,59 +331,128 @@ http://localhost:8080/swagger-ui/index.html
 
 # Como executar
 
+A aplicação pode ser executada de forma completa utilizando Docker Compose.
+
+O ambiente Docker é responsável por subir e integrar:
+
+- PostgreSQL;
+- backend Spring Boot;
+- frontend React servido pelo Nginx.
+
 ## Pré-requisitos
 
-Antes de iniciar, é necessário ter instalado:
+Para executar a aplicação com Docker é necessário ter instalado:
 
-- Java 21;
-- Maven;
-- PostgreSQL;
-- Git.
+- Git;
+- Docker com suporte ao Docker Compose.
+
+Não é necessário instalar Java, Maven, Node.js ou PostgreSQL localmente para executar a aplicação através do Docker.
 
 ## 1. Clonar o projeto
 
 ```bash
-git clone <git@github.com:IDantas7/Credit-Engine.git>
-cd <Credit-Engine>
+git clone https://github.com/IDantas7/Credit-Engine.git
+cd Credit-Engine
 ```
 
-## 2. Configurar o PostgreSQL
+## 2. Subir a aplicação
 
-Crie o banco utilizado pela aplicação e configure a conexão conforme as propriedades definidas no projeto.
-
-  ```text
-    DB_URL=jdbc:postgresql://localhost:5432/credit_engine
-    DB_USERNAME=postgres
-    DB_PASSWORD=sua_senha
-```
-
-## 3. Executar os testes
+Execute:
 
 ```bash
-  mvn test
+docker compose up --build
+```
+
+O Docker Compose irá criar e iniciar os serviços necessários para a aplicação:
+
+```text
+Frontend (React + Nginx)
+        |
+        | /api
+        v
+Backend (Spring Boot)
+        |
+        | JDBC
+        v
+PostgreSQL
+```
+
+Após a inicialização, os serviços estarão disponíveis em:
+
+| Serviço | Endereço |
+|---|---|
+| Frontend | `http://localhost:3000` |
+| Backend | `http://localhost:8080` |
+| Swagger | `http://localhost:8080/swagger-ui/index.html` |
+
+O frontend é obtido a partir do repositório `Credit-Engine-Frontend` durante o build e servido através do Nginx.
+
+As requisições realizadas pelo frontend para `/api` são encaminhadas pelo Nginx para o backend dentro da rede do Docker Compose.
+
+## Variáveis de ambiente
+
+O Docker Compose possui valores padrão para execução local.
+
+Opcionalmente, as credenciais do banco podem ser sobrescritas através de um arquivo `.env`:
+
+```text
+DB_USERNAME=postgres
+DB_PASSWORD=sua_senha
+```
+
+O arquivo `.env` não deve ser versionado.
+
+Um arquivo `.env.example` está disponível como referência.
+
+## Parar a aplicação
+
+Para interromper os containers:
+
+```bash
+docker compose down
+```
+
+## Reiniciar o ambiente do zero
+
+Para remover também o volume utilizado pelo PostgreSQL:
+
+```bash
+docker compose down -v
+```
+
+Depois, basta executar novamente:
+
+```bash
+docker compose up --build
+```
+
+## Executar os testes
+
+Caso Java 21 e Maven estejam instalados localmente, os testes também podem ser executados através de:
+
+```bash
+mvn test
 ```
 
 Os testes incluem os três Golden Cases fornecidos no desafio.
 
-## 4. Executar a aplicação
+## Execução sem Docker
+
+Também é possível executar apenas o backend localmente.
+
+Para isso, configure as variáveis:
+
+```text
+DB_URL=jdbc:postgresql://localhost:5432/credit_engine
+DB_USERNAME=postgres
+DB_PASSWORD=sua_senha
+```
+
+E execute:
 
 ```bash
-  mvn spring-boot:run
+mvn spring-boot:run
 ```
-
-A API ficará disponível em:
-
-```text
-http://localhost:8080
-```
-
-A documentação Swagger ficará disponível em:
-
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
----
 
 ## Documentação
 

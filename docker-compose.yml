@@ -1,0 +1,45 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: credit-engine-postgres
+    environment:
+      POSTGRES_DB: credit_engine
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d credit_engine"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: credit-engine-backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/credit_engine
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: https://github.com/IDantas7/Credit-Engine-Frontend.git#main
+    container_name: credit-engine-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
